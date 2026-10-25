@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using Gamekit2D;
 
-namespace Gamekit2D
-{
+namespace AventuraEnElBosque
+    {
     public class DialogueCanvasController : MonoBehaviour
     {
         public Animator animator;
