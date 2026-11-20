@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Gamekit2D
 {
@@ -7,18 +8,22 @@ namespace Gamekit2D
     {
         [SerializeField, Min(1)] private int totalRequired = 3;
         private int collectedCount;
-        private GUIStyle progressStyle;
+        private Text progressLabel;
+        private Image progressFill;
 
         private void Awake()
         {
             totalRequired = Mathf.Max(1, totalRequired);
             collectedCount = 0;
+            CreateHud();
+            RefreshHud();
         }
 
         public void Initialize(int requiredItems)
         {
             totalRequired = Mathf.Max(1, requiredItems);
             collectedCount = 0;
+            RefreshHud();
         }
 
         public bool TryRegisterCleanup()
@@ -27,48 +32,91 @@ namespace Gamekit2D
                 return false;
 
             collectedCount++;
+            RefreshHud();
             return true;
         }
 
-        private void OnGUI()
+        private void CreateHud()
         {
-            if (Event.current.type != EventType.Repaint)
+            GameObject canvasObject = new GameObject("Forest Care HUD");
+            canvasObject.transform.SetParent(transform, false);
+
+            Canvas canvas = canvasObject.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.sortingOrder = 1000;
+            canvasObject.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            canvasObject.GetComponent<CanvasScaler>().referenceResolution = new Vector2(1920f, 1080f);
+            canvasObject.GetComponent<CanvasScaler>().matchWidthOrHeight = 0.5f;
+            canvasObject.AddComponent<GraphicRaycaster>();
+
+            GameObject panelObject = CreateUiObject("Panel", canvasObject.transform);
+            RectTransform panelRect = panelObject.GetComponent<RectTransform>();
+            SetTopLeft(panelRect, new Vector2(24f, -24f), new Vector2(440f, 120f));
+            panelObject.AddComponent<Image>().color = new Color(0.025f, 0.055f, 0.045f, 0.94f);
+
+            GameObject labelObject = CreateUiObject("Progress Label", panelObject.transform);
+            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+            labelRect.anchorMin = new Vector2(0f, 1f);
+            labelRect.anchorMax = new Vector2(1f, 1f);
+            labelRect.pivot = new Vector2(0f, 1f);
+            labelRect.offsetMin = new Vector2(18f, -55f);
+            labelRect.offsetMax = new Vector2(-18f, -10f);
+            progressLabel = labelObject.AddComponent<Text>();
+            progressLabel.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            progressLabel.fontSize = 28;
+            progressLabel.fontStyle = FontStyle.Bold;
+            progressLabel.color = Color.white;
+            progressLabel.alignment = TextAnchor.MiddleLeft;
+            progressLabel.horizontalOverflow = HorizontalWrapMode.Overflow;
+            progressLabel.verticalOverflow = VerticalWrapMode.Overflow;
+
+            GameObject trackObject = CreateUiObject("Progress Track", panelObject.transform);
+            RectTransform trackRect = trackObject.GetComponent<RectTransform>();
+            trackRect.anchorMin = new Vector2(0f, 1f);
+            trackRect.anchorMax = new Vector2(1f, 1f);
+            trackRect.pivot = new Vector2(0f, 1f);
+            trackRect.offsetMin = new Vector2(18f, -98f);
+            trackRect.offsetMax = new Vector2(-18f, -68f);
+            trackObject.AddComponent<Image>().color = new Color(0.19f, 0.25f, 0.21f, 1f);
+
+            GameObject fillObject = CreateUiObject("Progress Fill", trackObject.transform);
+            RectTransform fillRect = fillObject.GetComponent<RectTransform>();
+            fillRect.anchorMin = Vector2.zero;
+            fillRect.anchorMax = Vector2.one;
+            fillRect.offsetMin = new Vector2(3f, 3f);
+            fillRect.offsetMax = new Vector2(-3f, -3f);
+            progressFill = fillObject.AddComponent<Image>();
+            progressFill.color = new Color(0.25f, 0.82f, 0.42f, 1f);
+            progressFill.type = Image.Type.Filled;
+            progressFill.fillMethod = Image.FillMethod.Horizontal;
+            progressFill.fillOrigin = (int)Image.OriginHorizontal.Left;
+            progressFill.fillAmount = 0f;
+        }
+
+        private static GameObject CreateUiObject(string objectName, Transform parent)
+        {
+            GameObject uiObject = new GameObject(objectName, typeof(RectTransform));
+            uiObject.transform.SetParent(parent, false);
+            return uiObject;
+        }
+
+        private static void SetTopLeft(RectTransform rect, Vector2 position, Vector2 size)
+        {
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+        }
+
+        private void RefreshHud()
+        {
+            if (progressLabel == null || progressFill == null)
                 return;
 
-            if (progressStyle == null)
-            {
-                progressStyle = new GUIStyle(GUI.skin.label)
-                {
-                    alignment = TextAnchor.MiddleLeft,
-                    fontStyle = FontStyle.Bold,
-                    wordWrap = false
-                };
-            }
-
-            float scale = Mathf.Clamp(Screen.height / 1080f, 0.75f, 2f);
-            float panelWidth = 400f * scale;
-            float panelHeight = 104f * scale;
-            Rect panel = new Rect(24f * scale, 24f * scale, panelWidth, panelHeight);
             int percentage = Mathf.RoundToInt((float)collectedCount / totalRequired * 100f);
-
-            GUI.depth = -100;
-            GUI.color = new Color(0.035f, 0.07f, 0.055f, 0.92f);
-            GUI.DrawTexture(panel, Texture2D.whiteTexture);
-
-            GUI.color = Color.white;
-            progressStyle.fontSize = Mathf.RoundToInt(26f * scale);
-            GUI.Label(new Rect(panel.x + 18f * scale, panel.y + 10f * scale, panel.width - 36f * scale, 38f * scale),
-                $"Forest care: {collectedCount}/{totalRequired} ({percentage}%)", progressStyle);
-
-            Rect bar = new Rect(panel.x + 18f * scale, panel.y + 62f * scale, panel.width - 36f * scale, 24f * scale);
-            GUI.color = new Color(0.20f, 0.24f, 0.21f, 1f);
-            GUI.DrawTexture(bar, Texture2D.whiteTexture);
-
-            GUI.color = new Color(0.25f, 0.82f, 0.42f, 1f);
-            Rect fill = new Rect(bar.x + 3f * scale, bar.y + 3f * scale,
-                (bar.width - 6f * scale) * collectedCount / totalRequired, bar.height - 6f * scale);
-            GUI.DrawTexture(fill, Texture2D.whiteTexture);
-            GUI.color = Color.white;
+            progressLabel.text = $"Forest care: {collectedCount}/{totalRequired} ({percentage}%)";
+            progressFill.fillAmount = Mathf.Clamp01((float)collectedCount / totalRequired);
         }
     }
 }
