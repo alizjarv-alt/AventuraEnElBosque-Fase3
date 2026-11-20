@@ -15,20 +15,20 @@
 
 ### Manual modifications
 
-- Adapted the progress label from `TMP_Text` to `UnityEngine.UI.Text` so the HUD can be built without requiring a TextMeshPro font asset.
-- Added `ForestCleanupSceneInstaller` to Zone 1 with `ForestCareProgress`. At scene startup it creates a high-contrast counter and progress bar, then spawns three distinct litter sprites (a bottle, a can, and paper) along the opening path.
+- Adapted the progress HUD to Unity's `OnGUI` drawing after the user reported that the runtime Canvas was invisible in the Game view.
+- Added `ForestCleanupSceneInstaller` to Zone 1 with `ForestCareProgress`. At scene startup it displays a high-contrast counter and progress bar, then spawns three distinct litter sprites (a bottle, a can, and paper) along the opening path.
 - Each litter object receives a `CircleCollider2D` with `Is Trigger` enabled and a `ForestCleanupCollectible` linked to the scene progress component. Collection destroys the item and increments the counter once.
 - Replaced the unsupported built-in `Arial.ttf` with Unity 2022.3's `LegacyRuntime.ttf` after the first Play attempt reported an `ArgumentException`.
-- The HUD references are assigned by the installer at runtime. No manual Inspector wiring is required for Zone 1.
+- The HUD is drawn directly by `ForestCareProgress.OnGUI`; no manual Inspector wiring is required for Zone 1.
 
 ### Functional validation
 
 - **Status:** Partially validated in Unity 2022.3.62f2 Play mode.
 - The first Play attempt exposed an unsupported font reference (`Arial.ttf`); it was replaced with `LegacyRuntime.ttf`.
 - The user confirmed that the litter appears in the scene and Leo collects it by touching it.
-- The user did not see the progress counter or bar in Play mode. The HUD canvas was changed to a root Screen Space Overlay canvas with a Graphic Raycaster and explicit sorting; its visibility still needs verification in Unity.
+- The user did not see the progress counter or bar in Play mode after two Canvas approaches. The display was changed to a direct `OnGUI` overlay; its visibility still needs verification in Unity.
 - The Console also showed repeated `NullReferenceException` messages from the existing `LocomotionSMB.OnSLStateNoTransitionUpdate` at `Scripts/Character/StateMachineBehaviours/Player/LocomotionSMB.cs:14`; these are separate from the cleanup mechanic.
-- Still confirm that the HUD is visible, starts at 0, and its counter and bar each advance once per item. Also verify that non-player collisions do not collect items. Do not claim those checks until observed.
+- Still confirm that the revised HUD is visible, starts at 0, and its counter and bar each advance once per item. Also verify that non-player collisions do not collect items. Do not claim those checks until observed.
 
 ## AI-assisted debugging
 
@@ -45,5 +45,5 @@
 - [x] Attach `ForestCareProgress` to the Zone 1 scene manager and connect its UI references at runtime.
 - [x] Add three litter objects with `ForestCleanupCollectible` and trigger colliders in Zone 1.
 - [x] In Play mode, visually confirm the three litter items appear and Leo collects them on contact.
-- [ ] Confirm the HUD is visible, then check its count and bar increase exactly once per item; record the values observed.
+- [ ] Confirm the revised HUD is visible, then check its count and bar increase exactly once per item; record the values observed.
 - [ ] Retest the Leo visual fix in Play mode and record the observed result.

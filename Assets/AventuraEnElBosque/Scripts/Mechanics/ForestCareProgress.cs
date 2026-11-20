@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Gamekit2D
 {
@@ -7,16 +6,19 @@ namespace Gamekit2D
     public sealed class ForestCareProgress : MonoBehaviour
     {
         [SerializeField, Min(1)] private int totalRequired = 3;
-        [SerializeField] private Text progressText;
-        [SerializeField] private Slider progressSlider;
-
         private int collectedCount;
+        private GUIStyle progressStyle;
 
         private void Awake()
         {
             totalRequired = Mathf.Max(1, totalRequired);
             collectedCount = 0;
-            RefreshDisplay();
+        }
+
+        public void Initialize(int requiredItems)
+        {
+            totalRequired = Mathf.Max(1, requiredItems);
+            collectedCount = 0;
         }
 
         public bool TryRegisterCleanup()
@@ -25,32 +27,48 @@ namespace Gamekit2D
                 return false;
 
             collectedCount++;
-            RefreshDisplay();
             return true;
         }
 
-        public void Initialize(int requiredItems, Text label, Slider slider)
+        private void OnGUI()
         {
-            totalRequired = Mathf.Max(1, requiredItems);
-            progressText = label;
-            progressSlider = slider;
-            collectedCount = 0;
-            RefreshDisplay();
-        }
+            if (Event.current.type != EventType.Repaint)
+                return;
 
-        private void RefreshDisplay()
-        {
+            if (progressStyle == null)
+            {
+                progressStyle = new GUIStyle(GUI.skin.label)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    fontStyle = FontStyle.Bold,
+                    wordWrap = false
+                };
+            }
+
+            float scale = Mathf.Clamp(Screen.height / 1080f, 0.75f, 2f);
+            float panelWidth = 400f * scale;
+            float panelHeight = 104f * scale;
+            Rect panel = new Rect(24f * scale, 24f * scale, panelWidth, panelHeight);
             int percentage = Mathf.RoundToInt((float)collectedCount / totalRequired * 100f);
 
-            if (progressText != null)
-                progressText.text = $"Forest care: {collectedCount}/{totalRequired} ({percentage}%)";
+            GUI.depth = -100;
+            GUI.color = new Color(0.035f, 0.07f, 0.055f, 0.92f);
+            GUI.DrawTexture(panel, Texture2D.whiteTexture);
 
-            if (progressSlider != null)
-            {
-                progressSlider.minValue = 0;
-                progressSlider.maxValue = totalRequired;
-                progressSlider.SetValueWithoutNotify(collectedCount);
-            }
+            GUI.color = Color.white;
+            progressStyle.fontSize = Mathf.RoundToInt(26f * scale);
+            GUI.Label(new Rect(panel.x + 18f * scale, panel.y + 10f * scale, panel.width - 36f * scale, 38f * scale),
+                $"Forest care: {collectedCount}/{totalRequired} ({percentage}%)", progressStyle);
+
+            Rect bar = new Rect(panel.x + 18f * scale, panel.y + 62f * scale, panel.width - 36f * scale, 24f * scale);
+            GUI.color = new Color(0.20f, 0.24f, 0.21f, 1f);
+            GUI.DrawTexture(bar, Texture2D.whiteTexture);
+
+            GUI.color = new Color(0.25f, 0.82f, 0.42f, 1f);
+            Rect fill = new Rect(bar.x + 3f * scale, bar.y + 3f * scale,
+                (bar.width - 6f * scale) * collectedCount / totalRequired, bar.height - 6f * scale);
+            GUI.DrawTexture(fill, Texture2D.whiteTexture);
+            GUI.color = Color.white;
         }
     }
 }

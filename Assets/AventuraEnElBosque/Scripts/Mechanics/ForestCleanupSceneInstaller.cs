@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Gamekit2D
 {
@@ -19,95 +18,10 @@ namespace Gamekit2D
         private void Awake()
         {
             ForestCareProgress progress = GetComponent<ForestCareProgress>();
-            Slider slider;
-            Text label;
-            CreateProgressHud(out label, out slider);
-            progress.Initialize(RequiredItems, label, slider);
+            progress.Initialize(RequiredItems);
 
             for (int i = 0; i < RequiredItems; i++)
                 CreateLitter(i, progress);
-        }
-
-        private void CreateProgressHud(out Text label, out Slider slider)
-        {
-            GameObject canvasObject = new GameObject("Forest Care HUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
-            Canvas canvas = canvasObject.GetComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            canvas.overrideSorting = true;
-            canvas.sortingOrder = 20;
-            canvas.targetDisplay = 0;
-
-            CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(1920, 1080);
-            scaler.matchWidthOrHeight = 0.5f;
-
-            GameObject panel = new GameObject("Progress Panel", typeof(RectTransform), typeof(Image));
-            panel.transform.SetParent(canvasObject.transform, false);
-            RectTransform panelRect = panel.GetComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0, 1);
-            panelRect.anchorMax = new Vector2(0, 1);
-            panelRect.pivot = new Vector2(0, 1);
-            panelRect.anchoredPosition = new Vector2(24, -24);
-            panelRect.sizeDelta = new Vector2(380, 92);
-            panel.GetComponent<Image>().color = new Color(0.035f, 0.07f, 0.055f, 0.88f);
-
-            GameObject labelObject = new GameObject("Progress Text", typeof(RectTransform), typeof(Text));
-            labelObject.transform.SetParent(panel.transform, false);
-            RectTransform labelRect = labelObject.GetComponent<RectTransform>();
-            labelRect.anchorMin = new Vector2(0, 1);
-            labelRect.anchorMax = new Vector2(1, 1);
-            labelRect.pivot = new Vector2(0, 1);
-            labelRect.anchoredPosition = new Vector2(16, -12);
-            labelRect.sizeDelta = new Vector2(-32, 32);
-            label = labelObject.GetComponent<Text>();
-            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            label.fontSize = 22;
-            label.color = Color.white;
-            label.alignment = TextAnchor.MiddleLeft;
-            label.raycastTarget = false;
-
-            GameObject sliderObject = new GameObject("Progress Bar", typeof(RectTransform), typeof(Slider));
-            sliderObject.transform.SetParent(panel.transform, false);
-            RectTransform sliderRect = sliderObject.GetComponent<RectTransform>();
-            sliderRect.anchorMin = new Vector2(0, 0);
-            sliderRect.anchorMax = new Vector2(1, 0);
-            sliderRect.pivot = new Vector2(0, 0);
-            sliderRect.anchoredPosition = new Vector2(16, 18);
-            sliderRect.sizeDelta = new Vector2(-32, 22);
-
-            Image background = CreateBarImage("Track", sliderObject.transform, new Color(0.20f, 0.24f, 0.21f, 1));
-            RectTransform backgroundRect = background.rectTransform;
-            backgroundRect.anchorMin = Vector2.zero;
-            backgroundRect.anchorMax = Vector2.one;
-            backgroundRect.offsetMin = Vector2.zero;
-            backgroundRect.offsetMax = Vector2.zero;
-
-            Image fill = CreateBarImage("Fill", sliderObject.transform, new Color(0.25f, 0.82f, 0.42f, 1));
-            RectTransform fillRect = fill.rectTransform;
-            fillRect.anchorMin = Vector2.zero;
-            fillRect.anchorMax = Vector2.one;
-            fillRect.offsetMin = new Vector2(3, 3);
-            fillRect.offsetMax = new Vector2(-3, -3);
-
-            slider = sliderObject.GetComponent<Slider>();
-            slider.transition = Selectable.Transition.None;
-            slider.interactable = false;
-            slider.minValue = 0;
-            slider.maxValue = RequiredItems;
-            slider.wholeNumbers = true;
-            slider.fillRect = fillRect;
-            slider.targetGraphic = background;
-        }
-
-        private static Image CreateBarImage(string objectName, Transform parent, Color color)
-        {
-            GameObject imageObject = new GameObject(objectName, typeof(RectTransform), typeof(Image));
-            imageObject.transform.SetParent(parent, false);
-            Image image = imageObject.GetComponent<Image>();
-            image.color = color;
-            image.raycastTarget = false;
-            return image;
         }
 
         private void CreateLitter(int index, ForestCareProgress progress)
