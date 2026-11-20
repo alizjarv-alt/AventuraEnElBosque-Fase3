@@ -15,14 +15,18 @@
 
 ### Manual modifications
 
-- At the time of this draft, no manual code changes have been made after generation.
-- Inspector setup is still required: assign the progress text and slider, set the target count, add a trigger collider to each debris item, assign the progress component, and optionally assign the sound and visual feedback event.
+- Adapted the progress label from `TMP_Text` to `UnityEngine.UI.Text` so the HUD can be built without requiring a TextMeshPro font asset.
+- Added `ForestCleanupSceneInstaller` to Zone 1 with `ForestCareProgress`. At scene startup it creates a high-contrast counter and progress bar, then spawns three distinct litter sprites (a bottle, a can, and paper) along the opening path.
+- Each litter object receives a `CircleCollider2D` with `Is Trigger` enabled and a `ForestCleanupCollectible` linked to the scene progress component. Collection destroys the item and increments the counter once.
+- Replaced the unsupported built-in `Arial.ttf` with Unity 2022.3's `LegacyRuntime.ttf` after the first Play attempt reported an `ArgumentException`.
+- The HUD references are assigned by the installer at runtime. No manual Inspector wiring is required for Zone 1.
 
 ### Functional validation
 
-- **Status:** Pending in Unity Play mode.
-- Confirm the counter starts at 0, increases once for each debris item, stops at the configured target, and updates both the text and slider. Confirm the optional sound/feedback and that non-player collisions do not collect the item. Check the Console for errors.
-- Record the Unity version and the observed result after performing these checks. Do not claim a successful validation until tested.
+- **Status:** Partially checked; collection behavior is not yet validated.
+- The first Play attempt exposed an unsupported font reference (`Arial.ttf`); it was replaced with `LegacyRuntime.ttf`.
+- A later Play attempt produced repeated `NullReferenceException` messages from the existing `LocomotionSMB.OnSLStateNoTransitionUpdate` at `Scripts/Character/StateMachineBehaviours/Player/LocomotionSMB.cs:14`. This error is outside the cleanup scripts and prevented a clean gameplay validation.
+- Still verify that the HUD starts at 0, each of the three items increments it exactly once, the bar matches the count, and non-player collisions do not collect items. Record the real result after the Animator error is resolved; do not claim successful validation yet.
 
 ## AI-assisted debugging
 
@@ -36,7 +40,7 @@
 
 ## Submission checklist
 
-- [ ] Attach `ForestCareProgress` to a scene manager and assign its UI references.
-- [ ] Add `ForestCleanupCollectible` to debris objects and configure their trigger colliders.
-- [ ] Set up and test the cleanup mechanic in Play mode; record the real result.
+- [x] Attach `ForestCareProgress` to the Zone 1 scene manager and connect its UI references at runtime.
+- [x] Add three litter objects with `ForestCleanupCollectible` and trigger colliders in Zone 1.
+- [ ] Test the cleanup mechanic in Play mode; record the real result.
 - [ ] Retest the Leo visual fix in Play mode and record the observed result.

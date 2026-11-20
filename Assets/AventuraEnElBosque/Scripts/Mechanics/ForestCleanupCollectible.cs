@@ -13,6 +13,14 @@ namespace Gamekit2D
 
         private bool hasBeenCollected;
 
+        public void Initialize(ForestCareProgress sceneProgress)
+        {
+            progress = sceneProgress;
+            Collider2D triggerCollider = GetComponent<Collider2D>();
+            if (triggerCollider != null)
+                triggerCollider.isTrigger = true;
+        }
+
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (hasBeenCollected || other.GetComponentInParent<PlayerCharacter>() == null)

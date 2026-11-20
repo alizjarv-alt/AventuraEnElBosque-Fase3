@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +7,7 @@ namespace Gamekit2D
     public sealed class ForestCareProgress : MonoBehaviour
     {
         [SerializeField, Min(1)] private int totalRequired = 3;
-        [SerializeField] private TMP_Text progressText;
+        [SerializeField] private Text progressText;
         [SerializeField] private Slider progressSlider;
 
         private int collectedCount;
@@ -28,6 +27,15 @@ namespace Gamekit2D
             collectedCount++;
             RefreshDisplay();
             return true;
+        }
+
+        public void Initialize(int requiredItems, Text label, Slider slider)
+        {
+            totalRequired = Mathf.Max(1, requiredItems);
+            progressText = label;
+            progressSlider = slider;
+            collectedCount = 0;
+            RefreshDisplay();
         }
 
         private void RefreshDisplay()
