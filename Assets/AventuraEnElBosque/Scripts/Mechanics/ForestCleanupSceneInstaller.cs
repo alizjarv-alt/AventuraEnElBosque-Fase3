@@ -30,11 +30,12 @@ namespace Gamekit2D
 
         private void CreateProgressHud(out Text label, out Slider slider)
         {
-            GameObject canvasObject = new GameObject("Forest Care HUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler));
-            canvasObject.transform.SetParent(transform, false);
+            GameObject canvasObject = new GameObject("Forest Care HUD", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
             Canvas canvas = canvasObject.GetComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
             canvas.sortingOrder = 20;
+            canvas.targetDisplay = 0;
 
             CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
