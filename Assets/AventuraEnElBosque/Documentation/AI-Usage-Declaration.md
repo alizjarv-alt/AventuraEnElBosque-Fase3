@@ -23,9 +23,10 @@
 
 ### Functional validation
 
-- **Status:** Partially checked; collection behavior is not yet validated.
+- **Status:** Partially validated in Unity 2022.3.62f2 Play mode.
 - The first Play attempt exposed an unsupported font reference (`Arial.ttf`); it was replaced with `LegacyRuntime.ttf`.
-- A later Play attempt produced repeated `NullReferenceException` messages from the existing `LocomotionSMB.OnSLStateNoTransitionUpdate` at `Scripts/Character/StateMachineBehaviours/Player/LocomotionSMB.cs:14`. This error is outside the cleanup scripts and prevented a clean gameplay validation.
+- The user confirmed that the litter appears in the scene and Leo collects it by touching it.
+- The Console also showed repeated `NullReferenceException` messages from the existing `LocomotionSMB.OnSLStateNoTransitionUpdate` at `Scripts/Character/StateMachineBehaviours/Player/LocomotionSMB.cs:14`; these are separate from the cleanup mechanic.
 - Still verify that the HUD starts at 0, each of the three items increments it exactly once, the bar matches the count, and non-player collisions do not collect items. Record the real result after the Animator error is resolved; do not claim successful validation yet.
 
 ## AI-assisted debugging
@@ -42,5 +43,6 @@
 
 - [x] Attach `ForestCareProgress` to the Zone 1 scene manager and connect its UI references at runtime.
 - [x] Add three litter objects with `ForestCleanupCollectible` and trigger colliders in Zone 1.
-- [ ] Test the cleanup mechanic in Play mode; record the real result.
+- [x] In Play mode, visually confirm the three litter items appear and Leo collects them on contact.
+- [ ] Confirm the HUD count and bar increase exactly once per item; record the values observed.
 - [ ] Retest the Leo visual fix in Play mode and record the observed result.
