@@ -1,6 +1,6 @@
 # AI Usage Declaration — Stage 4
 
-> Draft: the script-generation record is prepared. The AI debugging record and Unity play-mode validation still require real project evidence before submission.
+> The script-generation and visual-bug debugging records are documented. Unity validation after the changes is still pending.
 
 ## AI-assisted mechanic script
 
@@ -26,14 +26,17 @@
 
 ## AI-assisted debugging
 
-- **Status:** Pending. The Unity Console had no visible errors when this draft was prepared.
-- A reproducible configuration issue is available for the demonstration: temporarily leave the collectible without a `ForestCareProgress` reference and ensure no progress manager exists in the scene. Enter the trigger with Leo. The script should log `ForestCareProgress is missing from the scene.` Select the Console entry and capture its stack trace. Then add the manager and assign it to the collectible to correct the configuration.
-- **Literal prompt to use after capturing the error:** “Estoy trabajando en Unity 2022.3.62f2. Al entrar Leo en el trigger de un residuo aparece este error de Console: ‘ForestCareProgress is missing from the scene.’ Analiza el mensaje y esta llamada de `ForestCleanupCollectible.OnTriggerEnter2D`; explica la causa y cómo corregir la configuración en el Inspector sin eliminar la mecánica ni sus referencias. Indica cómo comprobar que el error desaparece y que el contador aumenta una sola vez.”
-- After reproducing the issue and submitting the prompt, record the real Console text, exact prompt used, AI diagnosis, correction, manual changes, and Play-mode result here. Do not describe the planned reproduction as completed until those actions have been performed.
+- **Status:** The reported visual bug was analyzed and corrected; post-fix Play-mode verification is pending.
+- **Observed issue:** After replacing Ellen's appearance with Leo's, Ellen's sprite still appeared intermittently at the start of a zone transition and after losing a life and respawning. The Unity Console had no associated error message; this was a visual regression.
+- **Literal user prompt:** “veo que aun aparece el personaje anterior ellen cuando cambio de zona al inicio y cuando se me quita una vida y vuelvo a revivir, debes mejorar esto”
+- **AI diagnosis:** The Leo prefab still had Ellen's idle sprite assigned as the SpriteRenderer's default image. The Animator used Leo's controller, but the default sprite could appear when the player was initialized again during a scene transition or respawn.
+- **Solution applied:** Set the prefab's default SpriteRenderer sprite to Leo's `Leo_Idle_01` frame and renamed the prefab/game object to Leo while preserving its GUID so existing scene references and gameplay components remained linked. Recorded in commit `f91bdd3` (`Use Leo sprite as prefab default`).
+- **Manual changes:** Updated the prefab's default sprite reference and renamed/moved the prefab asset. No movement, health, collider, or Animator parameters were changed in this fix.
+- **Validation:** Pending. In Unity 2022.3.62f2, test entering the first zone, transitioning to another zone, losing one life, and respawning. Confirm Leo remains visible throughout and record the result. Do not claim the fix is validated until these steps have been tested.
 
 ## Submission checklist
 
 - [ ] Attach `ForestCareProgress` to a scene manager and assign its UI references.
 - [ ] Add `ForestCleanupCollectible` to debris objects and configure their trigger colliders.
-- [ ] Test the mechanic in Play mode and record the real result.
-- [ ] Complete the debugging section from an actual Console error and retest the correction.
+- [ ] Set up and test the cleanup mechanic in Play mode; record the real result.
+- [ ] Retest the Leo visual fix in Play mode and record the observed result.
