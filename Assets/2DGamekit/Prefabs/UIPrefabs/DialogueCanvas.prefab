@@ -73,7 +73,7 @@ Animator:
   m_GameObject: {fileID: 1009638384006160}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 6f524e8f0bbd35744b47adbf527eac14, type: 2}
+  m_Controller: {fileID: 22100000, guid: de10ffe78ad1c554d909f1ee999a10fb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -164,7 +164,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "Hey! Is anyone else here? I\u2019d better keep moving. Use A and D to
-    move left and right, SPACE to jump, and S to crouch."
+    move left and right, SPACE to jump, and S to crouch. Let the adventure begin!"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4c1f115f2c9b80b4cabb22cae230db1c, type: 2}
   m_sharedMaterial: {fileID: 21498813622556604, guid: 4c1f115f2c9b80b4cabb22cae230db1c,
@@ -199,8 +199,8 @@ MonoBehaviour:
   m_fontSizeMin: 0
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 513
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -375,7 +375,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: c0c34b3ce5f3bad4a92ae2ace64ea54b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 073dc382a5c541be9e90446c07953512, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1

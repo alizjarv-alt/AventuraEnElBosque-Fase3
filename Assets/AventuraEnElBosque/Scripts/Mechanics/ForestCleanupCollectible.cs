@@ -1,3 +1,4 @@
+using AventuraEnElBosque;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -40,6 +41,13 @@ namespace Gamekit2D
 
             hasBeenCollected = true;
             onCollected.Invoke();
+            DialogueCanvasController dialogo = FindObjectOfType<DialogueCanvasController>(true);
+            if (dialogo != null)
+            {
+                dialogo.gameObject.SetActive(true);
+                dialogo.ActivateCanvasWithText("Waste collected! Thank you for taking care of the forest.");
+                dialogo.DeactivateCanvasWithDelay(3f);
+            }
 
             if (cleanupSound != null)
                 AudioSource.PlayClipAtPoint(cleanupSound, transform.position);
